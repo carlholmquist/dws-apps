@@ -18,9 +18,27 @@ class RunPage extends Component  {
             },
             machineBPM: 0,
             cansProduced: 0,
-            errorMessage: ''
+            errorMessage: '',
+            orders: [],
+            operators: []
         }
         this.handleChange = this.handleChange.bind(this)
+    }
+
+    componentDidMount() {
+        // e.preventDefault();
+        fetch('http://localhost:3500/run')
+        .then(res => res.json())
+        .then(result => {
+            console.log(result);
+            this.setState({
+                orders: result.orders.map(x => [x.order_id, x.label_type]), 
+                operators: result.operators.map(x => [x.operator_id,x.operator_name]),
+                orderId: result.orders[0].order_id,
+                operatorId: result.operators[0].operator_name
+             });
+            
+        })
     }
 
     handleChange (e)  {
@@ -88,7 +106,7 @@ class RunPage extends Component  {
         console.log('submit')
         var data = this.state;
         console.log(data);
-        fetch('http://localhost:3500/profile', {
+        fetch('http://localhost:3500/run', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
@@ -112,18 +130,14 @@ class RunPage extends Component  {
                             <Form.Group controlId="orderId">
                                 <Form.Label>Order Id</Form.Label>
                                 <Form.Control onChange={this.handleChange} as="select"> 
-                                    <option> LOL </option>
-                                    <option> LMAO</option>
+                                {this.state.orders.map(orderoption => <option key={orderoption[0]}> {orderoption[0]}</option>)}
                                 </Form.Control>
                             </Form.Group>
 
                             <Form.Group controlId="operatorId">
                                 <Form.Label>Operator Id</Form.Label>
                                 <Form.Control onChange={this.handleChange} as="select"> 
-                                    <option> Carl </option>
-                                    <option> Chris </option>
-                                    <option> Mitch </option>
-                                    <option> TJ </option>
+                                {this.state.operators.map(operatoroption => <option key={operatoroption[0]}> {operatoroption[1]}</option>)}
                                 </Form.Control>
                             </Form.Group>
 
